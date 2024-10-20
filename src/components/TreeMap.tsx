@@ -6,6 +6,14 @@ interface TreeMapProps {
   data: FileStructure;
 }
 
+// Extend the d3 HierarchyNode to include x0, x1, y0, y1 (rectangular coordinates added by treemap layout)
+interface HierarchyRectNode extends d3.HierarchyRectangularNode<FileStructure> {
+  x0: number;
+  x1: number;
+  y0: number;
+  y1: number;
+}
+
 const TreeMap: React.FC<TreeMapProps> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -32,11 +40,11 @@ const TreeMap: React.FC<TreeMapProps> = ({ data }) => {
 
     const { width, height } = dimensions;
 
-    const root = d3.hierarchy(data)
+    const root = d3.hierarchy<FileStructure>(data)
       .sum(d => d.size || 0)
       .sort((a, b) => (b.value || 0) - (a.value || 0));
 
-    const treemap = d3.treemap()
+    const treemap = d3.treemap<FileStructure>()
       .size([width, height])
       .padding(1)
       .round(true);
@@ -44,7 +52,7 @@ const TreeMap: React.FC<TreeMapProps> = ({ data }) => {
     treemap(root);
 
     const cell = svg.selectAll('g')
-      .data(root.leaves())
+      .data(root.leaves() as HierarchyRectNode[]) // Cast to HierarchyRectNode to access x0, y0, etc.
       .enter().append('g')
       .attr('transform', d => `translate(${d.x0},${d.y0})`);
 
@@ -58,7 +66,7 @@ const TreeMap: React.FC<TreeMapProps> = ({ data }) => {
       .data(d => d.data.name.split(/(?=[A-Z][^A-Z])/g))
       .enter().append('tspan')
       .attr('x', 3)
-      .attr('y', (d, i) => 13 + i * 10)
+      .attr('y', (_d, i) => 13 + i * 10)
       .attr('font-size', '10px')
       .text(d => d);
 
