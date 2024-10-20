@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCloudStorage } from '../contexts/CloudStorageContext';
 import TreeMap from '../components/TreeMap';
 import FileList from '../components/FileList';
 import CloudStorageSelector from '../components/CloudStorageSelector';
 import { AlertCircle } from 'lucide-react';
+import { analyzeFileStructure } from '../utils/analyzeFileStructure';
+
+// Define a type for the analysis result
+type AnalysisResult = {
+  suggestions: string[];
+};
 
 const Dashboard: React.FC = () => {
   const { selectedStorage, fileStructure, isLoading, error } = useCloudStorage();
   const [viewMode, setViewMode] = useState<'treemap' | 'list'>('treemap');
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+
+  useEffect(() => {
+    if (fileStructure) {
+      const result = analyzeFileStructure(fileStructure);
+      setAnalysisResult(result);
+    }
+  }, [fileStructure]);
 
   return (
     <div>
@@ -51,6 +65,16 @@ const Dashboard: React.FC = () => {
         )
       ) : (
         <p className="text-gray-600">Please select a cloud storage provider to view your files.</p>
+      )}
+      {analysisResult && (
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">File Structure Analysis</h2>
+          <ul className="list-disc pl-5">
+            {analysisResult?.suggestions.map((suggestion: string, index: number) => (
+              <li key={index} className="mb-2">{suggestion}</li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );

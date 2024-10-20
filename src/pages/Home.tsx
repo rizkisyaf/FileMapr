@@ -5,7 +5,7 @@ import { CloudIcon, Box, HardDriveIcon } from 'lucide-react';
 const Home: React.FC = () => {
   return (
     <div className="text-center">
-      <h1 className="text-4xl font-bold mb-8">Welcome to Cloud Visualizer</h1>
+      <h1 className="text-4xl font-bold mb-8">Welcome to FileMapr</h1>
       <p className="text-xl mb-8">Visualize and manage your cloud storage files with ease.</p>
       <div className="flex justify-center space-x-8 mb-12">
         <div className="text-center">
@@ -26,6 +26,12 @@ const Home: React.FC = () => {
         className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300"
       >
         Get Started
+      </Link>
+      <Link
+        to="/blog"
+        className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300 mt-4"
+      >
+        Read Our Blog
       </Link>
     </div>
   );
